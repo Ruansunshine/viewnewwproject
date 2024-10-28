@@ -1,5 +1,8 @@
 {
     "require-dev": {
         "phpunit/phpunit": "^11.3"
+    },
+    "require": {
+        "myclabs/deep-copy": "^1.12"
     }
 }

@@ -5,13 +5,13 @@
 class salasController{
     private $conexao;
 public function __construct($conexao){
-    $this->conexao = $conexao;  
+    $this->conexao = $conexao;      
 }
 public function RegistrarSalas($dados){
  try{
+    $usuarioId = $dados['Usuario_IdUsuario'];
 
-
-    if(empty($dados['Nome']) || empty($dados['Descricao']) || empty($dados['Status']) || empty($dados['Usuario_IdUsuario'])){
+    if(empty($dados['Nome']) || empty($dados['Descricao']) || empty($dados['Status']) || empty($usuarioId)){
         return ['mensagem' => 'Todos os campos são obrigatorias'];  
          }
          $query = "SELECT * FROM Salas WHERE Nome=?";
@@ -23,11 +23,13 @@ public function RegistrarSalas($dados){
           return ['mensagem' => 'Nome já está em uso.'];
          }
          $salas = new Salas($this->conexao);
-         $resultadoInsert = $salas->InsertSala($dados['Nome'],$dados['Descricao'],$dados['Status'],$dados['Usuario_IdUsuario']);
-         if (isset($resultadoInsert['id'])) {
+         $resultadoInsert = $salas->InsertSala($dados['Nome'],$dados['Descricao'],$dados['Status'], $usuarioId);
+         if ($resultadoInsert['sucess'])  {
+
             return [
-                'mensagem' => $resultadoInsert['mensagem'],
-                'id' => $resultadoInsert['id']  
+                'mensagem' => 'Inserido com sucesso',
+                'idSalas' => $resultadoInsert['id'],
+                'sucess' => true  
             ];
         }
         
@@ -74,7 +76,27 @@ public function ListarSalas() {
        
         if (is_array($resultado)) {
             return [
-                'mensagem' => 'Salas listadas com sucesso',
+                'mensagem' => '',
+                'dados' => $resultado 
+            ];
+        } else {
+            return [
+                'mensagem' => $resultado 
+            ];
+        }
+    } catch (mysqli_sql_exception $e) {
+        return ['mensagem' => 'Erro: ' . $e->getMessage()];
+    }
+}
+public function SalasUsersControll(){
+    try{
+        $salas = new Salas($this->conexao);
+        $resultado = $salas->SalasUsuarios(); 
+        
+       
+        if (is_array($resultado)) {
+            return [
+                'mensagem' => '',
                 'dados' => $resultado 
             ];
         } else {

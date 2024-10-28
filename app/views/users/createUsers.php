@@ -1,3 +1,18 @@
+<!-- <?php
+// session_start(); 
+
+
+// if (isset($_SESSION['idUser'])) {
+//     $idUser = $_SESSION['idUser'];
+   
+// } else {
+    
+//     header('Location: login.php');
+//     exit();
+// }
+?> -->
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,17 +41,16 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.0.0/mdb.umd.min.js"
       
     ></script>
-    <link rel="stylesheet" href="style.css" />
+   
     <title>Sign Up</title>
   </head>
 
   <body>
-    <section
-      class="vh-100 bg-image"
-      style="
-        background-image: url('imagens/imagem.webp');
-      "
-    >
+ 
+       <section class="vh-100 bg-image" style="background-image: url('imagens/imagem.webp');">
+
+    
+    
       <div class="mask d-flex align-items-center h-100 gradient-custom-3">
         <div class="container h-100">
           <div
@@ -114,7 +128,7 @@
 
                     <div class="d-flex justify-content-center">
                       <button
-                        type="button"
+                        type="subimt"
                         data-mdb-button-init
                         data-mdb-ripple-init
                         class="btn btn-success btn-block btn-lg gradient-custom-4 text-body"

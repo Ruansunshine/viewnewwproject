@@ -23,7 +23,7 @@
       type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.0.0/mdb.umd.min.js"
     ></script>
-    <link rel="stylesheet" href="style.css" />
+  
     <title>Login</title>
   </head>
 
@@ -47,7 +47,7 @@
                   </h2>
 
                   <form  action="http://localhost/projetoAci/app/routes/routesUsuarios.php?action=login" method="POST">
-
+                    <input type="hidden" name="Usuario_IdUsuario" value="<?php echo isset($_SESSION['idUser']) ? $_SESSION['idUser'] : ''; ?>">
                     <div
                       data-mdb-input-init
                       class="form-outline mb-4 border-bottom"
@@ -90,6 +90,7 @@
 
                     <p class="text-center mt-5 mb-0 text-white">
                        Não tem uma conta?
+                       
                       <a href="http://localhost/projetoAci/app/views/users/createUsers.php" class="fw-bold text-white"
                         ><u>Registre-se</u></a
                       >

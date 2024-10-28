@@ -17,10 +17,11 @@ class sensorController {
 
             $sensor = new sensor($this->conexao);
             $resultadoInsert = $sensor->InsertSensor($dados['Tipo'], $dados['Salas_idSalas']);
-
+            if($resultadoInsert('sucess'))
             return [
-                'mensagem' => $resultadoInsert['mensagem'],
-                'id' => $resultadoInsert['id']
+                'mensagem' => 'Usuário inserido com sucesso',
+                'idSalas' => $resultadoInsert['id'], // Retorna o ID do sensor
+                'sucess' => true
             ];
         } catch (mysqli_sql_exception $e) {
             return ['mensagem' => 'Erro: ' . $e->getMessage()];

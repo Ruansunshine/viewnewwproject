@@ -1,5 +1,7 @@
 <?php
-require_once('../../config/database.php');
+
+
+require_once(__DIR__ . '/../../config/database.php'); 
 require_once('salasmodels.php');
 
 class Usuario
@@ -16,26 +18,28 @@ class Usuario
         $this->conexao = $conexao;
     }
 
-    public function InsertUsuario($Nome, $Email, $Senha) // inserir usuario
-    {
-        $sql = "INSERT INTO Usuario (Nome, Email, Senha) VALUES (?, ?, ?)";
-        $consulta = $this->conexao->prepare($sql);
+        public function InsertUsuario($Nome, $Email, $Senha) // inserir usuario
+        {   
+            
+            $sql = "INSERT INTO Usuario (Nome, Email, Senha) VALUES (?, ?, ?)";
+            $consulta = $this->conexao->prepare($sql);
 
-        try {
-            $consulta->bind_param("sss", $Nome, $Email, $Senha);
-            $consulta->execute();
-            $idUsuario = $consulta->insert_id; 
-            return [
-                'mensagem' => $consulta->affected_rows > 0 ? "Inserido com sucesso" : "Nenhuma linha afetada",
-                'id' => $idUsuario,
-                'sucess' => true
+            try {
+                $consulta->bind_param("sss", $Nome, $Email, $Senha);
+                $consulta->execute();
+                $idUsuario = $consulta->insert_id; 
+                $_SESSION['idUsuario'] = $idUsuario;
+                return [
+                    'mensagem' => $consulta->affected_rows > 0 ? "Inserido com sucesso" : "Nenhuma linha afetada",
+                    'id' => $idUsuario,
+                    'sucess' => true    
+                ];
+            } catch (mysqli_sql_exception $e) {
+                return ['mensagem' => 'Erro: " . $e->getMessage()',
+                    'sucess' => false
             ];
-        } catch (mysqli_sql_exception $e) {
-            return ['mensagem' => 'Erro: " . $e->getMessage()',
-                 'sucess' => false
-        ];
+            }
         }
-    }
     public function ListUsuario()
     {
         $sql = "SELECT * FROM Usuario";
@@ -93,4 +97,23 @@ class Usuario
             return "Erro: " . $e->getMessage();
         }
     }
+    public function GetUserNameById($idUsuario){
+        $sql = "SELECT IdUsuario, Nome, Email, Senha FROM Usuario WHERE IdUsuario=?";
+        $consulta = $this->conexao->prepare($sql);
+        try{
+            $consulta->bind_param("i", $idUsuario);
+        $consulta->execute();
+        $result = $consulta->get_result();
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        
+        
+        } else {
+            return null; 
+        }
+        }catch ( mysqli_sql_exception $e) {
+            return "Erro: " . $e->getMessage();
+        }
+    }
+    
 }

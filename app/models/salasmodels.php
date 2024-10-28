@@ -26,11 +26,17 @@ class Salas
             $consulta->bind_param("ssii", $Nome, $Descricao, $status, $UsuarioId);
             $consulta->execute();
             $IdSalas = $consulta->insert_id; 
+            $_SESSION['idSalas'] = $IdSalas;
             return [
             'mensagem' => $consulta->affected_rows > 0 ? "Inserido com sucesso" : "Nenhuma linha afetada",
-            'id' => $IdSalas ];
+            'id' => $IdSalas,
+            'sucess' => true    ];
         } catch (mysqli_sql_exception $e) {
-            return "Erro: " . $e->getMessage();
+            return [
+                'mensagem' => 'Erro: ' . $e->getMessage(),
+                'sucess' => false
+            ];
+    
         }
     }
 
@@ -82,5 +88,33 @@ class Salas
                 return "Erro: " . $e->getMessage();
             }
         }
-        
+        public function SalasUsuarios(){
+            $sql = "SELECT 
+    u.IdUsuario AS IdUsuario,
+    u.Nome AS NomeUsuario,
+    u.Email AS EmailUsuario,
+    s.idSalas AS IdSala,
+    s.Nome AS NomeSala,
+    s.Descricao AS DescricaoSala,
+    s.Status AS StatusSala
+FROM 
+    automacao.usuario u
+INNER JOIN 
+    automacao.salas s ON u.IdUsuario = s.Usuario_IdUsuario;";
+
+        $consulta  = $this->conexao->prepare($sql);
+        try {
+            $consulta->execute();
+            $result = $consulta->get_result();
+
+            if ($result->num_rows > 0) {
+                $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+                return $usuarios;
+            } else {
+                return "Nenhuma linha encontrada";
+            }
+        }catch(mysqli_sql_exception $e){
+                return "Erro: " . $e->getMessage();
+            }
+        }
 }

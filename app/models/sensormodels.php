@@ -23,13 +23,17 @@ public function InsertSensor($Tipo, $Salas_idSalas){
         $consulta->bind_param("si", $Tipo,  $Salas_idSalas);
         $consulta->execute();
         $IdSensor = $consulta->insert_id;
+        $_SESSION['idSalas'] = $IdSensor;
         return [
             'mensagem' => $consulta->affected_rows > 0 ? "sensor inserido com sucesso" : "Nenhuma linha afetada",
-             'id'=> $IdSensor
+             'id'=> $IdSensor,
+             'sucess' => true
         ];
     }catch(mysqli_sql_exception $e){
-        return "Erro: " . $e->getMessage();
-    }
+        return ['mensagem' => 'Erro: " . $e->getMessage()',
+                    'sucess' => false
+            ];
+}
 }
 public function  ListSensor(){
     $sql = "SELECT * FROM Sensor ";

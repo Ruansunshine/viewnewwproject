@@ -4,9 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8af2a068ba6dabc85aa5f698ea1bca10",
-    "packages": [],
-    "packages-dev": [
+    "content-hash": "00ab886cadcce7dbb6399c4416c87d4c",
+    "packages": [
         {
             "name": "myclabs/deep-copy",
             "version": "1.12.0",
@@ -66,7 +65,9 @@
                 }
             ],
             "time": "2024-06-12T14:39:25+00:00"
-        },
+        }
+    ],
+    "packages-dev": [
         {
             "name": "nikic/php-parser",
             "version": "v5.2.0",
