@@ -30,10 +30,12 @@
                 if($action === 'cadastrarSala'){
                     $dados = $_POST;
                     $dados['Usuario_IdUsuario'] = $userId; 
+                    
                    
                     $resposta = $this->salasController->RegistrarSalas($dados);
+                    
                     if($resposta['mensagem'] === 'Inserido com sucesso'){
-                        header('Location: ../views/Salas/CreateSalas.php?mensagem=Cadastro realizado com sucesso!');
+                        header('Location: http://localhost/projetoAci/app/views/salas/Myenviroment.php?mensagem=Cadastro realizado com sucesso!');
                         exit();
                         }else{
                             header('Location: ../views/Salas/CreateSalas.php?mensagem=CADASTRO NÃO DEU CERTO!');
@@ -41,35 +43,60 @@
                     }
                 }else if ($action === 'editarSala') {
                     $dados = $_POST;
+                  
                     $resposta = $this->salasController->AtualizarSalasController($dados);
-                    if($resposta['mensagem']=== 'sala atualizada com sucesso'){
-                    header('Location: ../views/users/homeUser.php?mensagem=sala atualizada com sucesso');
+                    // var_dump($resposta);
+                    // exit();
+                    if($resposta['mensagem'] === 'Sala atualizada com sucesso'){
+                        var_dump("Redirecionando para o sucesso");
+                    header('Location:http://localhost/projetoAci/app/views/salas/Myenviroment.php?mensagem=ediçao da sala deu certo');
                     exit();
                     }else {
-                        header("Location:  ../views/users/login.html?mensagem=Usuario não enncontrado");
+                        var_dump("Redirecionando para o fracasso");
+                        header('Location: http://localhost/projetoAci/app/views/salas/EditingSala.php?mensagem=ediçao da sala não deu certo');
+                        exit();
                     }
                 }else if( $action === 'deletarSala'){
                      $dados = $_POST;
+                   
+                     
                      $resposta= $this->salasController->deleteSalaController($dados);
+                    
                      if($resposta['mensagem']=== 'Sala deletada com sucesso'){
-                        header('Location:  ../views/users/editingUser.php?mensagem="usuario atualizado ');
+                        header('Location:  http://localhost/projetoAci/app/views/salas/Myenviroment.php?mensagem="Sala Deletada ');
                         exit();
                      }else{
-                        header("Location: ../views/users/homeUser.php?mensagem= dados incompletos para atualizar");
+                        header("Location: http://localhost/projetoAci/app/views/salas/Myenviroment.php?mensagem= error ao apagar");
                      }
                 }else if ($action === 'listarSalas') {
                     $resposta = $this->salasController->SalasUsersControll();
                     if ($resposta['mensagem'] === '') {
                         
                         session_start();
-                        $_SESSION['salas'] = $resposta['dados'];
+                        $_SESSION['salaslistar'] = $resposta['dados'];
                         header('Location: http://localhost/projetoAci/app/views/salas/ListarSalas.php');
                         exit();
                     } else {
                         header("Location: http://localhost/projetoAci/app/views/salas/ListarSalas.php?mensagem=" . urlencode($resposta['mensagem']));
                         exit();
                     }
-                }
+                    }else if($action === 'listespecefic'){
+                            $dados = $_POST['Usuario_IdUsuario'];
+                           
+                        $resposta = $this->salasController->salaUserEspecif($dados);
+                        
+                        if ($resposta['mensagem'] === '') {
+                            
+                            session_start();
+                            $_SESSION['salas'] = $resposta['dados'];
+                            header('Location: http://localhost/projetoAci/app/views/salas/Myenviroment.php?mensagem? deu certo');
+                            exit();
+                        } else {
+                            header("Location: http://localhost/projetoAci/app/views/salas/ListarSalas.php?mensagem=" . urlencode($resposta['mensagem']));
+                            exit();
+                        }
+                    }
+
                 
             }catch (mysqli_sql_exception $e) {
                 header('Location:  ../views/users/createUsers.php?mensagem=ERRO, ' . urlencode("Erro: " . $e->getMessage()));

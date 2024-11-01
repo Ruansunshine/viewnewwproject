@@ -64,8 +64,10 @@ try {
 }
 
 public function UpdateSensor($Tipo,$IdSensor){
+
     $sql = "UPDATE Sensor  SET Tipo=? WHERE IdSensor = ?";
     $consulta =  $this->conexao->prepare($sql);
+    
     try {
         $consulta->bind_param("si",$Tipo, $IdSensor);
         $consulta->execute();
@@ -74,9 +76,47 @@ public function UpdateSensor($Tipo,$IdSensor){
         return "Erro: " . $e->getMessage();
     }
 }
+public function SensorSalasUsers($Salas_idSalas){
+    // var_dump($Salas_idSalas);
+    // exit();
+    $sql = "
+SELECT 
+    usuario.Nome AS NomeUsuario,
+    salas.Nome AS NomeSala,
+    salas.Descricao AS DescricaoSala,
+    sensor.IdSensor AS IdSensor, 
+    sensor.Tipo AS TipoSensor,
+    sensor.DataCadastro AS DataCadastroSensor
+FROM 
+    automacao.usuario
+JOIN 
+    automacao.salas ON usuario.IdUsuario = salas.Usuario_IdUsuario
+JOIN 
+    automacao.sensor ON salas.idSalas = sensor.Salas_idSalas
+WHERE 
+    salas.idSalas = ?;
+";
+$consulta = $this->conexao->prepare($sql);
+try{
+    $consulta->bind_param("i", $Salas_idSalas);
+    $consulta->execute();
+
+    $resultado = $consulta->get_result();
+    $sensores =[];
+    if ($resultado->num_rows > 0) {
+        while ($sensor = $resultado->fetch_assoc()) {
+            $sensores[] = $sensor; 
+        }
+        return $sensores;  
+    } else {
+        return [];
+    }
+}catch(mysqli_sql_exception $e){
+        return "Erro: " . $e->getMessage();
+    }
 
 }
-
+}
     
 
 ?>

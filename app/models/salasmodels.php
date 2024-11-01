@@ -80,10 +80,11 @@ class Salas
         public function UpdateSalas($Nome, $Descricao, $status, $IdSalas){
             $sql = "UPDATE Salas SET Nome=?, Descricao=?, Status=? WHERE idSalas=?";
             $consulta = $this->conexao->prepare($sql);
+            
             try{
                 $consulta->bind_param("ssii",$Nome, $Descricao, $status, $IdSalas );
                 $consulta->execute();
-                return $consulta->affected_rows > 0 ? "sala atualizada com sucesso" : "nenhuma linha afetada";
+                return $consulta->affected_rows > 0 ? "Sala atualizada com sucesso" : "nenhuma linha afetada";
             }catch(mysqli_sql_exception $e){
                 return "Erro: " . $e->getMessage();
             }
@@ -116,5 +117,39 @@ INNER JOIN
         }catch(mysqli_sql_exception $e){
                 return "Erro: " . $e->getMessage();
             }
+        }
+        public function SalasUser($UsuarioId){
+            $sql = "SELECT 
+    u.IdUsuario AS IdUsuario,
+    u.Nome AS NomeUsuario,
+    u.Email AS EmailUsuario,
+    s.idSalas AS IdSalas,
+    s.Nome AS NomeSala,
+    s.Descricao AS DescricaoSala,
+    s.Status AS StatusSala
+FROM 
+    automacao.usuario u
+LEFT JOIN 
+    automacao.salas s ON u.IdUsuario = s.Usuario_IdUsuario
+WHERE 
+    u.IdUsuario = ?;";
+    $consulta = $this->conexao->prepare($sql);
+    try{
+       $consulta->bind_param("i", $UsuarioId);
+       $consulta->execute();
+       
+       $result = $consulta->get_result();
+
+       if ($result->num_rows > 0) {
+           $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+           return $usuarios;
+       } else {
+           return "Nenhuma linha encontrada";
+       }
+           
+    }catch(mysqli_sql_exception $e){
+        return "Erro: " . $e->getMessage();
+    }
+
         }
 }

@@ -1,6 +1,6 @@
 <?php
 session_start(); // Certifique-se de que a sessão está iniciada
-if (!isset($_SESSION['idUser'])) {
+if (!isset($_SESSION['idUser'] )) {
     header('Location: ../views/users/login.html?mensagem=Você precisa estar logado.');
     exit();
 }

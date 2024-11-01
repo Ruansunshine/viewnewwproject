@@ -1,13 +1,15 @@
 <?php
 session_start(); // Inicie a sessão para acessar os dados armazenados
-
+if (!isset($_SESSION['salaslistar'])) {
+    $_SESSION['salas'] = []; // Isso mantém as salas entre as requisições
+}
 // Verifique se há uma mensagem a ser exibida
 if (isset($_GET['mensagem'])) {
     echo '<div class="alert alert-warning">' . htmlspecialchars($_GET['mensagem']) . '</div>';
 }
 
 // Verifique se as salas estão armazenadas na sessão
-$salas = isset($_SESSION['salas']) ? $_SESSION['salas'] : [];
+$salas = isset($_SESSION['salaslistar']) ? $_SESSION['salaslistar'] : [];
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +48,7 @@ $salas = isset($_SESSION['salas']) ? $_SESSION['salas'] : [];
         
         <!-- Formulário para listar salas -->
         <form method="POST" action="http://localhost/projetoAci/app/routes/RoutesSala.php?action=listarSalas">
-            <button type="submit" class="btn btn-primary">Listar Salas</button>
+            <button type="submit" class="btn btn-primary">Salas Gerais</button>
         </form>
 
         <div class="container sala-container">

@@ -11,16 +11,16 @@ public function RegistrarSalas($dados){
  try{
     $usuarioId = $dados['Usuario_IdUsuario'];
 
-    if(empty($dados['Nome']) || empty($dados['Descricao']) || empty($dados['Status']) || empty($usuarioId)){
+    if(empty($dados['Nome']) || empty($dados['Descricao']) || !isset($dados['Status']) || empty($usuarioId)){
         return ['mensagem' => 'Todos os campos são obrigatorias'];  
          }
-         $query = "SELECT * FROM Salas WHERE Nome=?";
+         $query = "SELECT * FROM Salas WHERE Descricao=?";
          $consulta = $this->conexao->prepare($query);
-         $consulta->bind_param("s", ($dados['Nome']));
+         $consulta->bind_param("s", ($dados['Descricao']));
          $consulta->execute();
          $resultquery = $consulta->get_result();
          if($resultquery->num_rows > 0){
-          return ['mensagem' => 'Nome já está em uso.'];
+          return ['mensagem' => 'Descricao já está em uso.'];
          }
          $salas = new Salas($this->conexao);
          $resultadoInsert = $salas->InsertSala($dados['Nome'],$dados['Descricao'],$dados['Status'], $usuarioId);
@@ -37,23 +37,32 @@ public function RegistrarSalas($dados){
             return "Erro: " . $e->getMessage();
         }
 }
-public function AtualizarSalasController($dados){
+    public function AtualizarSalasController($dados) {
+        
    
-    try{
-        if (empty($dados['Nome']) || empty($dados['Descricao']) || empty($dados['Status']) || empty($dados['Usuario_IdUsuario']) || empty($dados['idSalas'])){
-            return ['mensagem' => 'Todos os campos são obrigatorias'];  
-             }
-
+        try {
+        
+            if (empty($dados['idSalas'])) {
+                return ['mensagem' => 'ID da sala é obrigatório'];
+            }
            
+        
             $Salas = new Salas($this->conexao);
-            $Salas->UpdateSalas($dados['Nome'],$dados['Descricao'],$dados['Status'], $dados['idSalas']);
-            return ['mensagem' => 'sala atualizada com sucesso'];
 
+        
+            $Salas->UpdateSalas(
+                $dados['Nome'],
+                $dados['Descricao'],
+                $dados['Status'],
+                $dados['idSalas']
+            );
 
-}catch (mysqli_sql_exception $e) {
-    return "Erro: " . $e->getMessage();
-}
-}
+            return ['mensagem' => 'Sala atualizada com sucesso'];
+        } catch (mysqli_sql_exception $e) {
+            return ['mensagem' => 'Erro: ' . $e->getMessage()];
+        }
+    }
+
 public function deleteSalaController($dados){
     try{
         if (empty($dados['idSalas'])){
@@ -103,12 +112,37 @@ public function SalasUsersControll(){
             return [
                 'mensagem' => $resultado 
             ];
+            
         }
     } catch (mysqli_sql_exception $e) {
         return ['mensagem' => 'Erro: ' . $e->getMessage()];
     }
 }
+public function salaUserEspecif($usuarioId){
+      try{
+        if(!$usuarioId){
+            return ['mensagem' => 'o id do usuario é obrigatorio'];
 
+        }
+        $salas = new Salas($this->conexao);
+        $resultado = $salas->SalasUser($usuarioId);
+        if (is_array($resultado) && count($resultado) > 0) {
+            return [
+                'mensagem' => '',
+                'dados' => $resultado,
+                'sucesso' => true
+            ];
+        } else {
+            return [
+                'mensagem' => 'Nenhuma sala encontrada para o usuário especificado',
+                'dados' => [],
+                'sucesso' => false
+            ];
+        }
+      }catch (mysqli_sql_exception $e) {
+        return ['mensagem' => 'Erro: ' . $e->getMessage()];
+    }
+}
 
 }
 ?>

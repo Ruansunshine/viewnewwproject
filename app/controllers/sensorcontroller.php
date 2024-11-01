@@ -11,13 +11,16 @@ class sensorController {
 
     public function RegistrarSensor($dados) {
         try {
+        
             if (empty($dados['Tipo']) || empty($dados['Salas_idSalas'])) {
                 return ['mensagem' => 'Todos os campos são obrigatórios'];
             }
-
+          
             $sensor = new sensor($this->conexao);
             $resultadoInsert = $sensor->InsertSensor($dados['Tipo'], $dados['Salas_idSalas']);
-            if($resultadoInsert('sucess'))
+            var_dump($resultadoInsert);
+            if($resultadoInsert['sucess'])
+            
             return [
                 'mensagem' => 'Usuário inserido com sucesso',
                 'idSalas' => $resultadoInsert['id'], // Retorna o ID do sensor
@@ -29,14 +32,15 @@ class sensorController {
     }
 
     public function AtualizarSensor($dados) {
+     
         try {
             if (empty($dados['Tipo']) || empty($dados['IdSensor'])) {
                 return ['mensagem' => 'Todos os campos são obrigatórios'];
             }
-
+        
             $sensor = new sensor($this->conexao);
             $resultadoUpdate = $sensor->UpdateSensor($dados['Tipo'], $dados['IdSensor']);
-
+            var_dump($resultadoUpdate);
             return ['mensagem' => $resultadoUpdate];
         } catch (mysqli_sql_exception $e) {
             return ['mensagem' => 'Erro: ' . $e->getMessage()];
@@ -75,5 +79,25 @@ class sensorController {
             return ['mensagem' => 'Erro: ' . $e->getMessage()];
         }
     }
+    public function controlerSensorSalaUser($dados) {
+        // var_dump($dados);
+        // exit();
+        try {
+            if (empty($dados['Salas_idSalas'])) { 
+                return ['mensagem' => 'Id da sala é obrigatório']; 
+            }
+            
+            $sensor = new Sensor($this->conexao);
+            $resultadoJoin = $sensor->SensorSalasUsers($dados['Salas_idSalas']); 
+            if (is_array($resultadoJoin) && !empty($resultadoJoin)) {
+                return ['mensagem' => 'Consulta bem sucedida', 'sensores' => $resultadoJoin];
+            } else {
+                return ['mensagem' => 'Nenhum sensor encontrado'];
+            }
+        } catch (mysqli_sql_exception $e) {
+            return ['mensagem' => 'Erro: ' . $e->getMessage()];
+        }
+    }
+    
 }
 ?>
