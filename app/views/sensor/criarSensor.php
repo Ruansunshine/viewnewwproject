@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-var_dump($_SESSION['salas']);
+// var_dump($_SESSION['salas']);
 // Verificar se o usuário está logado
 if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
     $idUser = $_SESSION['idUser'];
@@ -83,7 +83,7 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
 </head>
 <body>
 
-<a class="btn-back" href="http://localhost/projetoAci/app/views/ambienteRegistro/homeAmbiente.php">&larr; Voltar</a>
+<a class="btn-back" href="http://localhost/projetoAci/app/views/salas/Myenviroment.php">&larr; Voltar</a>
 
 <header>
 <h1>Cadastrar Novo Sensor em <?= htmlspecialchars($salas[0]['NomeSala']) ?></h1>

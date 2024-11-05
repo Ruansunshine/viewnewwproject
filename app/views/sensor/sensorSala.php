@@ -1,18 +1,24 @@
 <?php
-session_start(); // Inicie a sessão para acessar os dados armazenados
-// var_dump($_POST); // Foco aqui
-//var_dump($_SESSION); // Foco aqui
-// exit();
+session_start(); 
+$idUser = isset($_SESSION['idUser']) ? $_SESSION['idUser'] : null;
+// echo "o id do usuario =";
+// var_dump($idUser);
+// echo "<br>";
+// echo "<br>";
+$sensores = isset($_SESSION['sensores']) ? $_SESSION['sensores'] : [];
+$salas = isset($_SESSION['salas']) ? $_SESSION['salas'] : [];
 
-// Verifique se há uma mensagem a ser exibida
-if (isset($_GET['mensagem'])) {
-    echo '<div class="alert alert-warning">' . htmlspecialchars($_GET['mensagem']) . '</div>';
+// var_dump($_SESSION);
+
+if (empty($sensores)) {
+    echo '<div class="alert alert-info">Nenhum sensor encontrado, click em Listar sensores para atualizar em caso de um novo cadastro.</div>';
+} else {
+    foreach ($sensores as $sensor) {
+        // echo '<div class= class="sensor">'. htmlspecialchars($sensor['DescricaoSala']) . '</div>';
+       
+    }
 }
 
-
-// Recupera as salas do usuário logado
-$salas = isset($_SESSION['salas']) ? $_SESSION['salas'] : [];
-$sensores = isset($_SESSION['sensores']) ? $_SESSION['sensores'] : [];
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +51,7 @@ $sensores = isset($_SESSION['sensores']) ? $_SESSION['sensores'] : [];
     </style>
 </head>
 <body>
-    <a style="color: white;" href="http://localhost/projetoAci/app/views/ambienteRegistro/homeAmbiente.php">&larr; Voltar</a>
+    <a style="color: white;" href="http://localhost/projetoAci/app/views/salas/Myenviroment.php">&larr; Voltar</a>
     <div class="container mt-3">
        <h1>Olá  <h2>Olá, <?= htmlspecialchars($_SESSION['nomeUsuario']) ?>!</h2></h1> 
         
@@ -54,10 +60,10 @@ $sensores = isset($_SESSION['sensores']) ? $_SESSION['sensores'] : [];
             <form method="POST" action="http://localhost/projetoAci/app/routes/RoutesSensor.php?action=listSensorUserSala">
                 <select name="idSalas" class="form-select" required>
                     <option value="" disabled selected>Selecione uma sala</option>
-                    <?php if (!empty($salas)): ?>
+                    <?php if (!empty($salas)): ?>       
                         <?php foreach ($salas as $sala): ?>
                             <option value="<?= htmlspecialchars($sala['IdSalas']) ?>">
-                                <?= htmlspecialchars($sala['NomeSala']) ?>
+                                <?= htmlspecialchars($sala['DescricaoSala']) ?>
                             </option>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -65,6 +71,7 @@ $sensores = isset($_SESSION['sensores']) ? $_SESSION['sensores'] : [];
                     <?php endif; ?>
                 </select>
                 <button type="submit" class="btn btn-primary">Listar Sensores</button>
+                <input type="hidden" name="UserO" value=" <?= htmlspecialchars($idUser) ?>">
             </form>
         </div>
         

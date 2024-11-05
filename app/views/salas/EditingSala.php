@@ -1,8 +1,8 @@
 <?php
 session_start();
-echo '<pre>';
-var_dump($_POST);
-echo '</pre>';
+// echo '<pre>';
+// var_dump($_POST);
+// echo '</pre>';
 
 if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
     $idUser = $_SESSION['idUser'];

@@ -59,24 +59,34 @@ class Salas
             return "Erro: " . $e->getMessage();
         }
     }
-    public function DeleteSala($IdSalas){
-     $sqlDeleteSensor= " DELETE FROM Sensor WHERE Salas_idSalas = ?";
-     $consultaDelete = $this->conexao->prepare($sqlDeleteSensor);
+    public function DeleteSala($IdSalas) {
+        // Primeiro, delete os registros associados na tabela ambiente
+        $sqlDeleteAmbiente = "DELETE FROM ambiente WHERE Sensor_IdSensor IN (SELECT IdSensor FROM Sensor WHERE Salas_idSalas = ?)";
+        $consultaDeleteAmbiente = $this->conexao->prepare($sqlDeleteAmbiente);
         
-       
-        try{
-            $consultaDelete->bind_param("i",$IdSalas);
-            $consultaDelete->execute();
-            $sensorSalas = $consultaDelete->affected_rows>0;
-            $sql = "DELETE FROM Salas WHERE idSalas= ?";
+        try {
+           
+            $consultaDeleteAmbiente->bind_param("i", $IdSalas);
+            $consultaDeleteAmbiente->execute();
+    
+            
+            $sqlDeleteSensor = "DELETE FROM Sensor WHERE Salas_idSalas = ?";
+            $consultaDeleteSensor = $this->conexao->prepare($sqlDeleteSensor);
+            $consultaDeleteSensor->bind_param("i", $IdSalas);
+            $consultaDeleteSensor->execute();
+        
+            $sql = "DELETE FROM Salas WHERE idSalas = ?";
             $consulta = $this->conexao->prepare($sql);
-            $consulta->bind_param("i",$IdSalas);
+            $consulta->bind_param("i", $IdSalas);
             $consulta->execute();
+    
+            
             return $consulta->affected_rows > 0 ? "Sala deletada com sucesso" : "Nenhuma linha afetada";
-        }catch(mysqli_sql_exception $e) {
+        } catch (mysqli_sql_exception $e) {
             return "Erro: " . $e->getMessage();
         }
     }
+    
         public function UpdateSalas($Nome, $Descricao, $status, $IdSalas){
             $sql = "UPDATE Salas SET Nome=?, Descricao=?, Status=? WHERE idSalas=?";
             $consulta = $this->conexao->prepare($sql);
@@ -152,4 +162,7 @@ WHERE
     }
 
         }
+
+
+                
 }

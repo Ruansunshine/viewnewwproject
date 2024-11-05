@@ -112,17 +112,28 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         /* Main content */
         main {
             margin-left: 250px;
-            margin-top: 60px; /* Para evitar sobreposição com a topbar */
+            margin-top: 60px; 
             transition: margin-left 0.3s;
         }
 
         .quadro-central {
             background-color: #ccc;
             border-radius: 10px;
-            margin: 20px auto;
-            max-width: 3000px;
+            margin: 0;
+            width: 100vw; 
+            height: 100vh;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+            max-width: 100%;
+        }
+
+        .quadro-central img {
+            width: 200vw; 
+            height: 100vh; 
+            object-fit: cover; 
         }
 
         .carrossel img {
@@ -137,7 +148,6 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
             border-radius: 50%;
         }
 
-        /* Estilo da barra de navegação fixa */
         nav.menu-desktop {
             position: fixed;
             bottom: 0;
@@ -166,38 +176,122 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         nav.menu-desktop a:hover {
             text-decoration: underline;
         }
+
+       
+      /* CSS Responsivo */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    main {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Sidebar responsiva */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        text-align: center;
+    }
+
+    /* Topbar responsiva */
+    .topbar {
+        left: 0;
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    /* Conteúdo principal adaptado para mobile */
+    main {
+        margin-left: 0;
+        margin-top: 60px;
+    }
+
+    .quadro-central {
+        width: 100vw;
+        height: auto;
+    }
+
+    .quadro-central img {
+        width: 100%;
+        height: auto;
+    }
+
+    /* Menu de navegação responsivo */
+    nav.menu-desktop ul {
+        flex-direction: column;
+    }
+
+    nav.menu-desktop ul li {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Sidebar escondida em telas muito pequenas */
+    /* .sidebar {
+        display: none;
+    } */
+
+    .topbar {
+        left: 0;
+        padding: 10px;
+        text-align: center;
+    }
+
+    /* Ajustar o carrossel em telas pequenas */
+    .quadro-central img {
+        width: 100%;
+        object-fit: contain;
+    }
+.quadro-central img {
+    width: 100vw; /* Ajustado para telas menores */
+    height: auto; /* Para manter a proporção da imagem */
+}
+
+    /* Estilização adicional para o menu de navegação */
+    nav.menu-desktop ul {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    nav.menu-desktop ul li {
+        padding: 10px 0;
+        margin-right: 0;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    
+}
+
     </style>
-    <title>ACLIoT Tech - Home</title>
+    <title style="font-size: medium;">ACLIoT Tech - Home</title>
 </head>
 <body>
 
 <!-- Barra Superior -->
 <div class="topbar">
-    <h1>Bem-vindo ao ACLIoT, <?php echo htmlspecialchars($nomeUsuario); ?>!</h1>
+    <h1 style="font-size: x-large;">Bem Vindo ao ACLIoT, <?php echo htmlspecialchars($nomeUsuario); ?></h1>
 </div>
 
-<div class="sidebar" id="sidebar">
+<div style="font-family: 'Times New Roman', Times, serif;" class="sidebar" id="sidebar">
     <h2 style="color: #fff; margin-left:1.5vh;">Home</h2>
     <a href="http://localhost/projetoAci/app/views/users/perfil.php">Perfil</a>
-    <a href="#">Item 2</a>
+    <a href="#">Historico</a>
     <a href="#">Configurações</a>
-    <a href="#">Sobre</a>
-   <br>
-   <br>
-   <br> 
-   <br>
-   <br>
-   <br>
-   <br> 
-   <br>
-   <br>
-   <br>
-   <br> 
-   <br>
-   <br>
-   <br>
-   <br> 
-   <br>
+    <a href="http://localhost/projetoAci/app/views/users/login.php">Sair</a>
    <br>
    <br>
    <br> 
@@ -205,15 +299,28 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
    <br>
    <br>
    <br>
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
    <br> 
    <br>
+   <br>
+   <br>
+   <br>
+   <br> 
+ 
    
-    <a href="">
-        <form action="http://localhost/projetoAci/app/views/salas/Myenviroment.php" method="POST">
-            <input type="hidden" name="Usuario_IdUsuario" value="<?php echo htmlspecialchars($idUser); ?>">
-            <button type="submit" class="side">Meu Ambiente</button>
-        </form>
-    </a>
+   <form action="http://localhost/projetoAci/app/views/salas/Myenviroment.php" method="POST">
+        <input type="hidden" name="Usuario_IdUsuario" value="<?php echo htmlspecialchars($idUser); ?>">
+        <button type="submit" class="side" style="margin-left: 2vh;" >Meu Ambiente</button>
+    </form>
 </div>
 
 <main>
@@ -221,13 +328,13 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         <div id="carouselExample" class="carousel slide carrossel" data-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="imagens/imagem.webp" class="d-block" alt="Imagem 1">
+                    <img src="imagens/eu.jpg" class="quadro-central img" alt="Imagem 1">
                 </div>
                 <div class="carousel-item">
-                    <img src="imagens/imagem.webp" class="d-block" alt="Imagem 2">
+                    <img src="imagens/maiseuruan.jpg" class="quadro-central img" alt="Imagem 2">
                 </div>
                 <div class="carousel-item">
-                    <img src="imagens/imagem.webp" class="d-block" alt="Imagem 3">
+                    <img src="imagens/lindos.jpg" class="quadro-central img" alt="Imagem 3">
                 </div>
             </div>
             <!-- Controles de navegação -->
@@ -240,27 +347,21 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
                 <span class="visually-hidden">Próximo</span>
             </a>
         </div>
-
-        <?php
-        if (isset($mensagemErro)) {
-            echo "<p style='color: red;'>$mensagemErro</p>";
-        }
-        ?>
     </div>
 
     <!-- Barra de Navegação Fixa -->
     <nav class="menu-desktop">
         <ul>
-            <li ><a href="http://localhost/projetoAci/app/views/salas/ListarSalas.php" class="menu-item">Salas</a></li>
-            <li><a href="http://localhost/projetoAci/app/views/sensor/listarsensor.php" class="menu-item">Detetor</a></li>
-            <li><a href="http://localhost/projetoAci/app/views/users/logs.php" class="menu-item">Logs</a></li>
+            <li style="margin-right: 60vh; font-family: 'Times New Roman', Times, serif;"><a href="http://localhost/projetoAci/app/views/salas/ListarSalas.php" class="menu-item">Salas</a></li>
+            <li style="margin-right: 60vh; font-family: 'Times New Roman', Times, serif;"><a href="http://localhost/projetoAci/app/views/sensor/listarsensor.php" class="menu-item">Detetor</a></li>
+            <li style="margin-right: 10vh; font-family: 'Times New Roman', Times, serif;"><a href="http://localhost/projetoAci/app/views/users/logs.php" class="menu-item">Logs</a></li>
         </ul>
     </nav>
 </main>
 
-<!-- Importando jQuery e Bootstrap JS -->
+<!-- JQUERY, POPPER JS E BOOTSTRAP JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>

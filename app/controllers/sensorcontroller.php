@@ -98,6 +98,36 @@ class sensorController {
             return ['mensagem' => 'Erro: ' . $e->getMessage()];
         }
     }
+    public function controleSalaAmbiente($dados){
+      if ( empty($dados['Salas_idSalas'])){
+        return['mensagem' => 'Id da sala é obrigatorio'];
+      }
     
+    $sensor = new Sensor($this->conexao);
+    try {
+    $resultado = $sensor->SelectAmbienteSalaSensor($dados['Salas_idSalas']);
+    if(is_array($resultado) && !empty($resultado)){
+        foreach ($resultado as $item) {
+            $dadosRetornados[] = [
+                'IdUsuario' => $item['IdUsuario'],
+                'NomeUsuario' => $item['NomeUsuario'],
+                'IdSala' => $item['IdSala'],
+                'NomeSala' => $item['NomeSala'],
+                'IdSensor' => $item['IdSensor'],
+                'TipoSensor' => $item['TipoSensor'],
+                'IdAmbiente' => $item['IdAmbiente'],
+                'IiluminacaoEstado' => $item['IiluminacaoEstado'],
+                'Temperatura' => $item['Temperatura'],
+                'ConsumoEnergia' => $item['ConsumoEnergia'],
+            ];
+        }
+        return['mensagem' => 'Consulta bem sucedida', 'ambiente' => $dadosRetornados];
+    }else {
+        return ['mensagem' => 'Nenhum dados encontrado'];
+    }
+}catch(mysqli_sql_exception $e){
+    return ['mensagem' => 'erro'. $e->getMessage()];
+}
+}
 }
 ?>

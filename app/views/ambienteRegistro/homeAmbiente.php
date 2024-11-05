@@ -1,20 +1,54 @@
 <?php
 session_start();
 
-
-
 if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
     $idUser = $_SESSION['idUser'];
     $nomeUsuario = is_array($_SESSION['nomeUsuario']) ? implode('', $_SESSION['nomeUsuario']) : $_SESSION['nomeUsuario'];
 
     $_SESSION['salas'] = $_SESSION['salas'] ?? []; // Inicializa como um array vazio se não estiver definido
+    $sensores = isset($_SESSION['sensores']) ? $_SESSION['sensores'] : [];
+    
+    if (!empty($sensores)) {
+        ?>
+        <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
+            <form action="http://localhost/projetoAci/app/routes/RoutesAmbiente.php?action=simularAmbiente" method="POST">
+                <?php
+                foreach ($sensores as $sensor) {
+                    $idSensor = $sensor['IdSensor'];
+                    $tipoSensor = $sensor['TipoSensor'];
+                ?>
+                    <input type="hidden" name="IdSensor_IdSensor[]" value="<?= htmlspecialchars($idSensor) ?>"> 
+                    <input type="hidden" name="Tipo[]" value="<?= htmlspecialchars($tipoSensor) ?>">
+                <?php
+                }
+                ?>
+                <button type="submit" class="btn btn-primary">Acionar todos os sensores</button>
+            </form>
+        </div>
 
-    $salas = $_SESSION['salas']; // Atribui à variável
-} else {
-    header('Location: login.php?mensagem=Você precisa estar logado aqui é a home ambiente .');
-    exit();
+        <div class="d-flex justify-content-center flex-wrap gap-3 mt-4">
+            <?php
+            if (isset($_SESSION['salas']) && is_array($_SESSION['salas'])) {
+                foreach ($_SESSION['salas'] as $sala) {
+                    ?>
+                    <form action="http://localhost/projetoAci/app/routes/RoutesAmbiente.php?action=Views" method="POST">
+                        <input type="hidden" name="IdSalas" value="<?= htmlspecialchars($sala['IdSalas']) ?>">
+                        <input type="hidden" name="nomeSala" value="<?= htmlspecialchars($sala['NomeSala']) ?>">
+                        <button type="submit" class="btn btn-secondary">Visualizar dados da <?= htmlspecialchars($sala['NomeSala']) ?></button>
+                    </form>
+                    <?php
+                }
+            }
+            ?>
+        </div>
+        <?php
+    } else {
+        header('Location: http://localhost/projetoAci/app/views/users/notfound.php?mensagem=Algunsdadosestãofaltando');
+        exit();
+    }
 }
-?>    
+?>
+  
 
 
   <!DOCTYPE html>
@@ -324,6 +358,37 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         animation: bulb 0.3s 0.3s 5 cubic-bezier(0.26, 1.17, 0.89, -0.74)
           alternate forwards;
       }
+      .table-responsive {
+    margin-top: 20px; /* Espaço superior para a tabela */
+}
+
+.data-container {
+  color: #000;
+    padding: 10px; /* Espaçamento interno */
+    border: 1px solid #ccc; /* Borda do contêiner */
+    border-radius: 5px; /* Bordas arredondadas */
+    background-color: #f9f9f9; /* Cor de fundo clara */
+    margin-bottom: 10px; /* Espaço entre os contêineres */
+}
+
+.table th, .table td {
+    vertical-align: middle; /* Alinha o conteúdo ao centro verticalmente */
+}
+.data-tuple-container {
+    border: 1px solid #ddd; /* Borda leve ao redor do contêiner */
+    border-radius: 8px; /* Bordas arredondadas */
+    background-color: #fdfdfd; /* Cor de fundo */
+    padding: 15px; /* Espaçamento interno */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.table th, .table td {
+    vertical-align: middle; /* Alinha o conteúdo ao centro verticalmente */
+}
+
+.table-responsive {
+    margin-top: 20px; /* Espaço superior para a tabela */
+}
 
       @keyframes bulb {
         to {
@@ -372,12 +437,7 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
     <body>
     <a style="color:#e0e0e0" href="http://localhost/projetoAci/app/views/salas/Myenviroment.php">&larr; Voltar</a>
       <header style="margin-top: 1vh;"   class="header"> Dashboard</header>
-      <form action="http://localhost/projetoAci/app/views/sensor/sensorSala.php">
-
-        <input type="hidden" name="idSalas" value="<?= htmlspecialchars($sala['idSalas']) ?>">
-        <input type="hidden" name="nomeSala" value="<?= htmlspecialchars($sala['nomeSala']) ?>">
-          <button style="margin-left: 171vh; color:#000" class="button register-button">Verificar sensores</button>
-          </form>
+     
       <div class="container">
         <div class="sub-header">
           <p>
@@ -387,8 +447,8 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         
           
         </div>
-
-        <div class="grid">
+              <!-- termometro -->
+        <div class="grid">   
           <div class="temperatura">
             <div class="termometro">
               <div class="coluna"></div>
@@ -420,7 +480,7 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
               <div class="marker-label marker-0" style="bottom: -6px">0°C</div>
             </div>
           </div>
-
+              <!-- fim termometro -->
           <div class="energia-lampada">
 
 
@@ -536,14 +596,88 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
 <h1 class="ligada-desligada">Ligada</h1>
 </div>
 </div>
+  </div>
+  
+  
+  
+ 
+ 
+</div>  
 </div>
-            <form action="http://localhost/projetoAci/app/views/sensor/criarSensor.php" method="POST">             
-              
-              <input type="hidden" name="idSalas" value="<?= htmlspecialchars($sala['idSalas']) ?>">
-              <input type="hidden" name="nomeSala" value="<?= htmlspecialchars($sala['nomeSala']) ?>">
-              
-          <button style="margin-left: 150vh; color:#000" type="submit" class="button register-button">Novo detector</button>
-          </form>
+<br>
+<br>
+<br>
+<br>
+
+
+<div class="container mt-5">
+    <h2 class="text-center">Dados do Ambiente</h2>
+
+    <?php
+    // Verifica se a sessão já está iniciada
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Exibe a mensagem de sucesso, se houver
+    if (isset($_SESSION['mensagem'])) {
+        echo '<div class="alert alert-info">' . htmlspecialchars($_SESSION['mensagem']) . '</div>';
+        unset($_SESSION['mensagem']);
+    }
+
+    // Verifica se há dados na sessão e exibe
+    if (isset($_SESSION['dados'])) {
+        foreach ($_SESSION['dados'] as $dado) {
+            // Início do contêiner para cada tupla de dados
+            echo '<div class="data-tuple-container mb-4">'; // Contêiner para cada tupla
+
+            echo '<div class="table-responsive">'; // Contêiner responsivo para a tabela
+            echo '<table class="table table-striped table-bordered">'; // Adicionando classes para estilização
+            echo '<thead class="thead-dark">'; // Estilo para o cabeçalho
+            echo '<tr>
+                    <th>Nome da Sala</th>
+                    <th>Descrição da Sala</th>
+                    <th>Status da Sala</th>
+                    <th>Estado da Iluminação</th>
+                    <th>Temperatura</th>
+                    <th>Consumo de Energia</th>
+                    <th>Tipo de Sensor</th>
+                    <th>Nome do Usuário</th>
+                    <th>Data de Cadastro</th>
+                </tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            echo '<tr>'; // Cada linha da tabela
+            echo '<td>';
+            echo '<div class="data-container">'; // Contêiner para cada célula
+            echo '<strong>Local:</strong> ' . htmlspecialchars($dado['NomeSala']) . '<br>';
+            echo '<strong>Descrição:</strong> ' . htmlspecialchars($dado['DescricaoSala']) . '<br>';
+            echo '<strong>Data Local:</strong> ' . htmlspecialchars($dado['DataCadastro']) . '<br>';
+            echo '<strong>Status:</strong> ' . (htmlspecialchars($dado['StatusSala']) == '1' ? 'Ativo' : 'Inativo'). '<br>';
+            echo '<strong>Estado da Iluminação:</strong> ' . (isset($dado['IiluminacaoEstado']) ? (htmlspecialchars($dado['IiluminacaoEstado']) == '1' ? 'Ligado' : 'Desligado') : 'NULL') . '<br>';
+            echo '<strong>Temperatura:</strong> ' . (isset($dado['Temperatura']) ? htmlspecialchars($dado['Temperatura']) . ' °C' : 'NULL') . '<br>';
+            echo '<strong>Consumo de Energia:</strong> ' . (isset($dado['ConsumoEnergia']) ? htmlspecialchars($dado['ConsumoEnergia']) . ' kWh' : 'NULL') . '<br>';
+            echo '<strong>Tipo de Sensor:</strong> ' . htmlspecialchars($dado['TipoSensor']) . '<br>';
+            
+            echo '</div>'; // Fim do contêiner de dados
+            echo '</td>';
+            echo '</tr>'; // Fim da linha da tabela
+            echo '</tbody>';
+            echo '</table>';
+            echo '</div>'; // Fim do contêiner responsivo
+
+            echo '</div>'; // Fim do contêiner para cada tupla
+        }
+
+        unset($_SESSION['dados']); // Limpa os dados após exibição
+    } else {
+        echo '<div class="alert alert-warning">Nenhum dado encontrado para exibir.</div>';
+    }
+    ?>
+</div>
+
+
+
           </div>
         </div>
       </div>

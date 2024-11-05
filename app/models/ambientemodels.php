@@ -6,78 +6,133 @@ require_once('sensormodels.php');
 
 
 
-class ambiente {
-private $idambiente;
-private $iluminacao;
-private $temperatura;
-private $ConsumoEnergia;
-private $Sensor_IdSensor;
-private $conexao;
-public function __construct($conexao){  
-    $this->conexao=$conexao;
-
-}
-public function InsertAmbiente($iluminacao, $temperatura, $ConsumoEnergia, $Sensor_IdSensor){
-    $sql= "INSERT INTO Ambiente(IiluminacaoEstado, Temperatura, ConsumoEnergia, Sensor_IdSensor) VALUES (?,?,?,?)";
-    $consulta = $this->conexao->prepare($sql);
-
-    if (!$consulta) {
-        return "Erro na preparação da consulta: " . $this->conexao->error;
-    } 
-        
-    try {
-        $consulta->bind_param("iddi", $iluminacao, $temperatura, $ConsumoEnergia, $Sensor_IdSensor);
-        $consulta->execute();
-        $idambiente = $consulta->insert_id;
-
-        return [
-           'mensagem' => $consulta->affected_rows > 0 ? "Inserido com sucesso" : "Nenhuma linha afetada",
-           'id' => $idambiente
-
-        ];
-    } catch (mysqli_sql_exception $e) {
-        return "Erro: " . $e->getMessage();
+class ambiente
+{
+    private $idambiente;
+    private $iluminacao;
+    private $temperatura;
+    private $ConsumoEnergia;
+    private $Sensor_IdSensor;
+    private $Tipo;
+    private $IdSala;
+    private $conexao;
+    public function __construct($conexao)
+    {
+        $this->conexao = $conexao;
     }
-}
-public function listarAmbiente(){
-$sql= "SELECT * FROM Ambiente";   
- $consulta = $this->conexao->prepare($sql);
-    try {
-       
-        $consulta = $this->conexao->query($sql);
-    if ($consulta->num_rows > 0) {
-        $resultambiente = $consulta->fetch_all(MYSQLI_ASSOC);
-        return $resultambiente;
-    }else {
-        return "nenhuma linha afetada";
-    }
-           
-   } catch(mysqli_sql_exception $e){
-    return "Erro: " . $e->getMessage();
-   }
-}
-public function VisualizarView(){
-    $sqlView = "SELECT * FROM salas_sensores_ambiente;";
-    $consulta = $this->conexao->prepare($sqlView);
-    try {
-        if($consulta){
-            $consulta->execute();
-            $result = $consulta->get_result();
-            if( $result->num_rows>0){       
-                $dados =  $result->fetch_all(MYSQLI_ASSOC);
-                return $dados;
-            }else{
-                return [];
-        }
-        }else {
+    public function InsertAmbiente($iluminacao, $temperatura, $ConsumoEnergia, $Sensor_IdSensor)
+    {
+        $sql = "INSERT INTO Ambiente(IiluminacaoEstado, Temperatura, ConsumoEnergia, Sensor_IdSensor) VALUES (?,?,?,?)";
+        $consulta = $this->conexao->prepare($sql);
+
+        if (!$consulta) {
             return "Erro na preparação da consulta: " . $this->conexao->error;
         }
 
-    }catch(mysqli_sql_exception $e){
-    return "Erro: " . $e->getMessage();
-   }
-}
-}
+        try {
+            $consulta->bind_param("iddi", $iluminacao, $temperatura, $ConsumoEnergia, $Sensor_IdSensor);
+            $consulta->execute();
+            $idambiente = $consulta->insert_id;
+
+            return [
+                'mensagem' => $consulta->affected_rows > 0 ? "Inserido com sucesso" : "Nenhuma linha afetada",
+                'id' => $idambiente
+
+            ];
+        } catch (mysqli_sql_exception $e) {
+            return "Erro: " . $e->getMessage();
+        }
+    }
+    public function listarAmbiente()
+    {
+        $sql = "SELECT * FROM Ambiente";
+        $consulta = $this->conexao->prepare($sql);
+        try {
+
+            $consulta = $this->conexao->query($sql);
+            if ($consulta->num_rows > 0) {
+                $resultambiente = $consulta->fetch_all(MYSQLI_ASSOC);
+                return $resultambiente;
+            } else {
+                return "nenhuma linha afetada";
+            }
+        } catch (mysqli_sql_exception $e) {
+            return "Erro: " . $e->getMessage();
+        }
+    }
+    public function StoredProcedure($Sensor_IdSensorArray, $TipoArray)
+    {
+        $resultados = [];
+        $sql = "CALL SimularDadosAmbiente(?, ?)";
 
 
+
+        if (!is_array($Sensor_IdSensorArray) || !is_array($TipoArray)) {
+            return ['mensagem' => 'Os parâmetros devem ser arrays.'];
+        }
+        //     echo "<br>";
+        //     echo "DADOS DA RESPOSTA NO MODEL DEPOIS DO IF  =";
+        //     var_dump($Sensor_IdSensorArray);
+        //    echo "<br>";
+        //    echo "DADOS DA RESPOSTA NO MODEL DEPOIS DO IF  =";
+        //    var_dump($TipoArray);
+
+        foreach ($Sensor_IdSensorArray as $key => $Sensor_IdSensor) {
+
+            $Tipo = $TipoArray[$key] ?? '';
+
+            $consulta = $this->conexao->prepare($sql);
+            try {
+
+                $consulta->bind_param("is", $Sensor_IdSensor, $Tipo);
+                $consulta->execute();
+                $resultados[] = ['mensagem' => 'StoredProcedure executada com sucesso'];
+            } catch (mysqli_sql_exception $e) {
+                $resultados[] = ['mensagem' => 'Erro: ' . $e->getMessage()];
+            }
+        }
+
+        return $resultados;
+    }
+    public function DadosAmbienteSensor($IdSala)
+{
+    $sql = "SELECT 
+                NomeSala, 
+                DescricaoSala, 
+                StatusSala, 
+                IiluminacaoEstado, 
+                Temperatura, 
+                ConsumoEnergia, 
+                TipoSensor, 
+                NomeUsuario, 
+                DataCadastro
+            FROM 
+                view_dados_completos_por_sala
+            WHERE 
+                IdSala = ?";
+
+    $consulta = $this->conexao->prepare($sql);
+    try {
+        $consulta->bind_param("i", $IdSala);
+
+      
+        if ($consulta->execute()) {
+            $result = $consulta->get_result(); 
+
+          
+            if ($result && $result->num_rows > 0) {
+                $dados = $result->fetch_all(MYSQLI_ASSOC); 
+                return $dados;
+            } else {
+                return ['mensagem' => 'Nenhum dado encontrado'];
+            }
+        } else {
+            return ['mensagem' => 'Falha na execução da consulta'];
+        }
+    } catch (mysqli_sql_exception $e) {
+        return ['mensagem' => 'Erro: ' . $e->getMessage()];
+    }
+}
+
+}
 ?>

@@ -1,7 +1,7 @@
 <?php
     require_once('../../config/database.php');
     require_once('../../app/controllers/sensorcontroller.php');
-
+     
   
     class routesSensor{
        
@@ -38,7 +38,7 @@
                         
                             $_SESSION['idUser'] = $_SESSION['salas'][0]['IdUsuario'];
                             
-                            header('Location: http://localhost/projetoAci/app/views/ambienteRegistro/homeAmbiente.php?mensagem=Novo sensor inserido');
+                            header('Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem=Novo sensor inserido');
                             exit();
                             }else{
                                 header('Location: http://localhost/projetoAci/app/views/sensor/criarSensor.php?mensagem=ERRO, não foi cadastrado!');
@@ -71,46 +71,76 @@
                      }else{
                         header("Location: ../views/users/homeUser.php?mensagem= dados incompletos para atualizar");
                      }
-                }else if($action === 'delete'){
-                 
-                        $dados = $_POST;
+                }else if($action === 'delete') {
+                    $dados = $_POST;
+                
+                    if (isset($dados['idSensor'])) {
+                        $dados['IdSensor'] = (int)$dados['idSensor'];
+                    } else {
+                        
+                        header("Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem=ID do sensor ausente");
+                        exit();
+                    }
+                
+                    $resposta = $this->sensorController->DeleteSensor($dados);
+                
+                    if ($resposta['mensagem'] === 'Sensor deletado com sucesso, e registros associados na tabela ambiente removidos') {
+                        if (isset($_SESSION['sensores'])) {
+                            $_SESSION['sensores'] = array_filter($_SESSION['sensores'], function($sensor) use ($dados) {
+                                return (int)$sensor['IdSensor'] !== $dados['IdSensor'];
+                            });
+                        }
+                
                        
-                      
-
-                       if (isset($dados['idSensor'])) {
-                        $dados['IdSensor'] = $dados['idSensor'];
-                       }
-                        $resposta = $this->sensorController->DeleteSensor($dados);
-                        // var_dump($resposta);
-                        // exit();
-                        if($resposta['mensagem'] === 'sensor deletado com sucesso'){
-                            header("Location:  http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem= sensor deletado, por favor selecione a sala e click listar sensores    ");
-                            exit();
-                        }else{
-                            header("Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem=erro erro da rota");
+                        if (!isset($dados['Salas_idSalas'])) {
+                            header("Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem=ID da sala ausente");
                             exit();
                         }
-                    }else if($action === 'listSensorUserSala'){
+                
+                        header("Location: http://localhost/projetoAci/app/routes/RoutesSensor.php?action=listSensorUserSala&idSalas=" . $dados['Salas_idSalas']);
+                        exit();
+                    } else {
+                        header("Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem=Erro ao deletar sensor");
+                        exit();
+                    }
+                }
+                else if($action === 'listSensorUserSala'){
+               
                         $dados = $_POST;
                        
-                        if (isset($dados['idSalas'])) {
-                            
+                        if (empty($dados) && isset($_GET['idSalas'])) {
+                            $dados['Salas_idSalas'] = $_GET['idSalas'];
+                        } else if (isset($dados['idSalas'])) {
                             $dados['Salas_idSalas'] = $dados['idSalas'];
                         }
-                        
+                        if (isset($dados['Salas_idSalas'])) {
                         $resposta = $this->sensorController->controlerSensorSalaUser($dados);
-                        //   var_dump($resposta);
-                        //  exit();
+
                        
                         if($resposta['mensagem'] === 'Consulta bem sucedida'){
                             $_SESSION['sensores'] = $resposta['sensores'];  
-                            header('Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem:listados com sucesso');
+                            header('Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem = listados com sucesso');
                             exit();
                         }else{
-                            header('Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem:nenhuma a ser listada ou erro.');
+                            header('Location: http://localhost/projetoAci/app/views/sensor/sensorSala.php?mensagem = nenhuma a ser listada ou erro.');
                             exit();
                         }
+                    }
 
+                    }else if ($action === 'buscarAmbiente'){
+                        $dados = $_POST;
+                        if (isset($dados['idSalas'])){
+                            $dados['Salas_idSalas'] = $dados['idSalas'];
+                        }
+                        $resposta = $this->sensorController->controleSalaAmbiente($dados);
+                        if($resposta['mensagem'] === 'Consulta bem sucedida'){
+                              $_SESSION['ambiente'] = $resposta['ambiente'];
+                              header('Location: http://localhost/projetoAci/app/views/ambienteRegistro/homeAmbiente.php?mensagem =dadosdoambientesucesso');
+                              exit();
+                        }else {
+                              header ('Location: http://localhost/projetoAci/app/views/ambienteRegistro/homeAmbiente.php?mensagem= dadosnaoretornadoorconsulta falhou');
+                              exit();
+                        }
                     }
             }catch (mysqli_sql_exception $e) {
                 header('Location:  ../views/users/createUsers.php?mensagem=ERRO, ' . urlencode("Erro: " . $e->getMessage()));

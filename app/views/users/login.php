@@ -25,57 +25,48 @@
     ></script>
   
     <title>Login</title>
+
+    <style>
+      .form-control.form-control-lg {
+        color: white; /* Corrigido para white */
+      }
+      .form-control.form-control-lg::placeholder {
+        color: white; /* Se você quiser que o texto do placeholder também seja branco */
+      }
+    </style>
   </head>
 
   <body>
-    <section
-      class="vh-100 bg-image"
-      style="
-       background-image: url('imagens/imagem.webp');   
-      "
-    >
-      <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+  <section class="vh-100 bg-image" style="background-image: url('imagens/imagem.webp');">
+      <div class="mask d-flex align-items-center h-100" style="background: linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5));">
         <div class="container h-100">
-          <div
-            class="row d-flex justify-content-center align-items-center h-100"
-          >
+          <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-12 col-md-9 col-lg-7 col-xl-6">
               <div class="card bg-dark text-white" style="border-radius: 15px">
                 <div class="card-body p-5">
-                  <h2 class="text-center mb-5">
-                  BEM VINDO DE VOLTA!
+                    BEM VINDO DE VOLTA!
                   </h2>
 
-                  <form  action="http://localhost/projetoAci/app/routes/routesUsuarios.php?action=login" method="POST">
+                  <form action="http://localhost/projetoAci/app/routes/routesUsuarios.php?action=login" method="POST">
                     <input type="hidden" name="Usuario_IdUsuario" value="<?php echo isset($_SESSION['idUser']) ? $_SESSION['idUser'] : ''; ?>">
-                    <div
-                      data-mdb-input-init
-                      class="form-outline mb-4 border-bottom"
-                    >
+                    <div data-mdb-input-init class="form-outline mb-4 border-bottom">
                       <input
                         type="email"
                         id="form3Example3cg"
                         class="form-control form-control-lg"
                         name="Email"
                       />
-                      <label class="form-label text-white" for="form3Example3cg"
-                        >Seu email</label
-                      >
+                      <label class="form-label text-white" for="form3Example3cg">Seu email</label>
                     </div>
 
-                    <div
-                      data-mdb-input-init
-                      class="form-outline mb-4 border-bottom"
-                    >
+                    <div data-mdb-input-init class="form-outline mb-4 border-bottom">
                       <input
                         type="password"
                         id="form3Example4cg"
                         class="form-control form-control-lg"
                         name="Senha"
                       />
-                      <label class="form-label text-white" for="form3Example4cg"
-                        >Senha</label
-                      >
+                      <label class="form-label text-white" for="form3Example4cg">Senha</label>
                     </div>
                     <div class="d-flex justify-content-center">
                       <button
@@ -89,11 +80,8 @@
                     </div>
 
                     <p class="text-center mt-5 mb-0 text-white">
-                       Não tem uma conta?
-                       
-                      <a href="http://localhost/projetoAci/app/views/users/createUsers.php" class="fw-bold text-white"
-                        ><u>Registre-se</u></a
-                      >
+                      Não tem uma conta?
+                      <a href="http://localhost/projetoAci/app/views/users/createUsers.php" class="fw-bold text-white"><u>Registre-se</u></a>
                     </p>
                   </form>
                 </div>

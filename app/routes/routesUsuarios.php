@@ -21,6 +21,8 @@
                 case 'POST':
                     try{
                     if($action === 'cadastrar'){
+                        session_start();
+                        $_SESSION= [];
                         $dados = $_POST;
                     
                         $resposta = $this->UsuarioController->Registrar($dados);
@@ -40,8 +42,9 @@
                                 exit();
                         }
                     }else if ($action === 'login') {
+                        session_start();
+                        $_SESSION = [];
                         $dados = $_POST; 
-                       
                         
                         $resposta = $this->UsuarioController->LoginUsuario($dados);
                         if($resposta['mensagem']=== 'Login realizado com sucesso'){
@@ -55,7 +58,7 @@
                         header('Location: ../views/users/homeUser.php?mensagem=Login realizado com sucesso');
                         exit();
                         }else {
-                            header("Location:  ../views/users/login.html?mensagem=Usuario não enncontrado");
+                            header("Location:  http://localhost/projetoAci/app/views/users/login.php?mensagem=Usuario não enncontrado");
                             exit();
                         }
                     }else if( $action === 'editar'){

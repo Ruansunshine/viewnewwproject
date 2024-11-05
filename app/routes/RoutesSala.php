@@ -61,7 +61,8 @@
                    
                      
                      $resposta= $this->salasController->deleteSalaController($dados);
-                    
+                    // var_dump($resposta);
+                    // exit();
                      if($resposta['mensagem']=== 'Sala deletada com sucesso'){
                         header('Location:  http://localhost/projetoAci/app/views/salas/Myenviroment.php?mensagem="Sala Deletada ');
                         exit();
