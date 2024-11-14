@@ -115,32 +115,28 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
             margin-top: 60px; 
             transition: margin-left 0.3s;
         }
-
+        .quadro-central .carousel-inner
         .quadro-central {
-            background-color: #ccc;
-            border-radius: 10px;
-            margin: 0;
-            width: 100vw; 
-            height: 100vh;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; 
-            max-width: 100%;
+          width: 100%;
+            
         }
 
         .quadro-central img {
-            width: 200vw; 
-            height: 100vh; 
-            object-fit: cover; 
+            background-size: cover;
         }
+        
 
-        .carrossel img {
-            border-radius: 5px;
-            width: 100%;
-            height: auto;
-        }
+        .carrossel img {   
+             background-size: cover; /* Faz com que a imagem cubra toda a tela */
+    background-position: center; /* Centraliza a imagem no fundo */
+    background-repeat: no-repeat; /* Evita que a imagem se repita */
+    height: 100vh; /* Define a altura do body para 100% da altura da janela de visualização */
+    margin: 0; /* Remove margens para cobrir totalmente a tela */
+}
+
+            
+         
+        
 
         .carousel-control-prev-icon,
         .carousel-control-next-icon {
@@ -214,12 +210,12 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
 
     .quadro-central {
         width: 100vw;
-        height: auto;
+        height: 100%;
     }
 
     .quadro-central img {
         width: 100%;
-        height: auto;
+        height: 100%;
     }
 
     /* Menu de navegação responsivo */
@@ -246,10 +242,12 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
 
     /* Ajustar o carrossel em telas pequenas */
     .quadro-central img {
+        height: 100%;
         width: 100%;
         object-fit: contain;
     }
 .quadro-central img {
+    height: 100%;
     width: 100vw; /* Ajustado para telas menores */
     height: auto; /* Para manter a proporção da imagem */
 }
@@ -328,13 +326,13 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         <div id="carouselExample" class="carousel slide carrossel" data-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="imagens/eu.jpg" class="quadro-central img" alt="Imagem 1">
+                    <img src="imagens/freepik__candid-image-photography-natural-textures-highly-r__23466.jpeg" class="quadro-central img" alt="Imagem 1">
                 </div>
                 <div class="carousel-item">
-                    <img src="imagens/maiseuruan.jpg" class="quadro-central img" alt="Imagem 2">
+                    <img src="imagens/img.jpg   " class="quadro-central img" alt="Imagem 2">
                 </div>
                 <div class="carousel-item">
-                    <img src="imagens/lindos.jpg" class="quadro-central img" alt="Imagem 3">
+                    <img src="imagens/imagensAci.jpeg" class="quadro-central img" alt="Imagem 3">
                 </div>
             </div>
             <!-- Controles de navegação -->

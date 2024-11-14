@@ -41,7 +41,8 @@ session_start();
 <body>
     <div class="container">
         <div class="not-found">404 NOT FOUND</div>
-        <p>Desculpe, Id do sensor não existe, a função ver so está disponivel caso exista sensores</p>
+        <p>Desculpe, Id do sensor não existe, a função ver so está disponivel caso exista sensores, caso exista voce deve ir em  verificar detetores em <a href="http://localhost/projetoAci/app/views/salas/Myenviroment.php"> Seu ambiente</a>  escolher a sala e listar
+</p>
         <a href="http://localhost/projetoAci/app/views/users/homeUser.php">&larr; Voltar ao Início</a>
 
 

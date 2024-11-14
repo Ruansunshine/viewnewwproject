@@ -94,21 +94,21 @@ public function SensorSalasUsers($Salas_idSalas){
     // var_dump($Salas_idSalas);
     // exit();
     $sql = "
-SELECT 
-    usuario.Nome AS NomeUsuario,
-    salas.Nome AS NomeSala,
-    salas.Descricao AS DescricaoSala,
-    sensor.IdSensor AS IdSensor, 
-    sensor.Tipo AS TipoSensor,
-    sensor.DataCadastro AS DataCadastroSensor
-FROM 
-    automacao.usuario
-JOIN 
-    automacao.salas ON usuario.IdUsuario = salas.Usuario_IdUsuario
-JOIN 
-    automacao.sensor ON salas.idSalas = sensor.Salas_idSalas
-WHERE 
-    salas.idSalas = ?;
+    SELECT 
+        usuario.Nome AS NomeUsuario,
+        salas.Nome AS NomeSala,
+        salas.Descricao AS DescricaoSala,
+        sensor.IdSensor AS IdSensor, 
+        sensor.Tipo AS TipoSensor,
+        sensor.DataCadastro AS DataCadastroSensor
+    FROM 
+        automacao.usuario
+    JOIN 
+        automacao.salas ON usuario.IdUsuario = salas.Usuario_IdUsuario
+    JOIN 
+        automacao.sensor ON salas.idSalas = sensor.Salas_idSalas
+    WHERE 
+        salas.idSalas = ?;
 ";
 $consulta = $this->conexao->prepare($sql);
 try{

@@ -1,7 +1,7 @@
 <?php
 
 
-require_once(__DIR__ . '/../../config/database.php'); 
+require_once(__DIR__ . '/../../config/database.php');
 require_once('salasmodels.php');
 
 class Usuario
@@ -18,28 +18,29 @@ class Usuario
         $this->conexao = $conexao;
     }
 
-        public function InsertUsuario($Nome, $Email, $Senha) // inserir usuario
-        {   
-            
-            $sql = "INSERT INTO Usuario (Nome, Email, Senha) VALUES (?, ?, ?)";
-            $consulta = $this->conexao->prepare($sql);
+    public function InsertUsuario($Nome, $Email, $Senha) // inserir usuario
+    {
 
-            try {
-                $consulta->bind_param("sss", $Nome, $Email, $Senha);
-                $consulta->execute();
-                $idUsuario = $consulta->insert_id; 
-                $_SESSION['idUsuario'] = $idUsuario;
-                return [
-                    'mensagem' => $consulta->affected_rows > 0 ? "Inserido com sucesso" : "Nenhuma linha afetada",
-                    'id' => $idUsuario,
-                    'sucess' => true    
-                ];
-            } catch (mysqli_sql_exception $e) {
-                return ['mensagem' => 'Erro: " . $e->getMessage()',
-                    'sucess' => false
+        $sql = "INSERT INTO Usuario (Nome, Email, Senha) VALUES (?, ?, ?)";
+        $consulta = $this->conexao->prepare($sql);
+
+        try {
+            $consulta->bind_param("sss", $Nome, $Email, $Senha);
+            $consulta->execute();
+            $idUsuario = $consulta->insert_id;
+            $_SESSION['idUsuario'] = $idUsuario;
+            return [
+                'mensagem' => $consulta->affected_rows > 0 ? "Inserido com sucesso" : "Nenhuma linha afetada",
+                'id' => $idUsuario,
+                'sucess' => true
             ];
-            }
+        } catch (mysqli_sql_exception $e) {
+            return [
+                'mensagem' => 'Erro: " . $e->getMessage()',
+                'sucess' => false
+            ];
         }
+    }
     public function ListUsuario()
     {
         $sql = "SELECT * FROM Usuario";
@@ -61,30 +62,44 @@ class Usuario
     }
     public function DeleteUser($IdUsuario)
     {
-        $sqlDeleteSala ="DELETE FROM Salas WHERE Usuario_IdUsuario = ?"; 
-        $consultaSalas = $this->conexao->prepare($sqlDeleteSala); 
-       
+        $this->conexao->begin_transaction();
         try {
+            $sqlAlerta = "DELETE FROM alertas WHERE idAmbiente IN (SELECT Idambiente FROM ambiente WHERE Sensor_IdSensor IN (SELECT IdSensor FROM sensor WHERE Salas_idSalas IN (SELECT idSalas FROM salas WHERE Usuario_IdUsuario = ?)))";
+            $consultaAlertas = $this->conexao->prepare($sqlAlerta);
+            $consultaAlertas->bind_param("i", $IdUsuario);
+            $consultaAlertas->execute();
+
+            $sqlDeleteAmbientes = "DELETE FROM ambiente WHERE Sensor_IdSensor IN (SELECT IdSensor FROM sensor WHERE Salas_idSalas IN (SELECT idSalas FROM salas WHERE Usuario_IdUsuario = ?))";
+            $consultaAmbientes = $this->conexao->prepare($sqlDeleteAmbientes);
+            $consultaAmbientes->bind_param("i", $IdUsuario);
+            $consultaAmbientes->execute();
+
+            $sqlDeleteSensores = "DELETE FROM sensor WHERE Salas_idSalas IN (SELECT idSalas FROM salas WHERE Usuario_IdUsuario = ?)";
+            $consultaSensores = $this->conexao->prepare($sqlDeleteSensores);
+            $consultaSensores->bind_param("i", $IdUsuario);
+            $consultaSensores->execute();
+            $sqlDeleteSalas = "DELETE FROM salas WHERE Usuario_IdUsuario = ?";
+            $consultaSalas = $this->conexao->prepare($sqlDeleteSalas);
             $consultaSalas->bind_param("i", $IdUsuario);
             $consultaSalas->execute();
-           $salaDeletada = $consultaSalas->affected_rows>0;
-            $sql = "DELETE FROM Usuario WHERE IdUsuario= ?";
-            $consulta = $this->conexao->prepare($sql);
-            $consulta->bind_param("i", $IdUsuario);
-            $consulta->execute();
-         if ($consulta->affected_rows > 0 ){
-            return $salaDeletada ?
-             "Usuario e suas dependencia deletadas" : "Nenhuma linha afetada";
-         }else {
-            return $salaDeletada ? 
-            "Nenhuma linha afetada ao deletar o usuário, mas as dependências foram removidas." :
-            "Nenhuma linha afetada ao deletar o usuário e suas dependências.";
-         }
-
+            $sqlDeleteUsuario = "DELETE FROM usuario WHERE IdUsuario = ?";
+            $consultaUsuario = $this->conexao->prepare($sqlDeleteUsuario);
+            $consultaUsuario->bind_param("i", $IdUsuario);
+            $consultaUsuario->execute();
+            if ($consultaUsuario->affected_rows > 0) {
+                // Commitar a transação
+                $this->conexao->commit();
+                return "Usuário e suas dependências deletadas com sucesso.";
+            } else {
+                // Desfazer a transação em caso de falha
+                $this->conexao->rollback();
+                return "Erro ao deletar o usuário, mas suas dependências foram removidas.";
+            }
         } catch (mysqli_sql_exception $e) {
             return "Erro: " . $e->getMessage();
         }
     }
+
     public function UpdateUser($Nome, $Email, $Senha, $IdUsuario)
     {
         $sql = "UPDATE Usuario SET Nome=?, Email=?, Senha=?  WHERE IdUsuario = ?";
@@ -97,23 +112,21 @@ class Usuario
             return "Erro: " . $e->getMessage();
         }
     }
-    public function GetUserNameById($idUsuario){
+    public function GetUserNameById($idUsuario)
+    {
         $sql = "SELECT IdUsuario, Nome, Email, Senha FROM Usuario WHERE IdUsuario=?";
         $consulta = $this->conexao->prepare($sql);
-        try{
+        try {
             $consulta->bind_param("i", $idUsuario);
-        $consulta->execute();
-        $result = $consulta->get_result();
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
-        
-        
-        } else {
-            return null; 
-        }
-        }catch ( mysqli_sql_exception $e) {
+            $consulta->execute();
+            $result = $consulta->get_result();
+            if ($result->num_rows > 0) {
+                return $result->fetch_assoc();
+            } else {
+                return null;
+            }
+        } catch (mysqli_sql_exception $e) {
             return "Erro: " . $e->getMessage();
         }
     }
-    
 }

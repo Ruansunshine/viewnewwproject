@@ -15,6 +15,7 @@ class ambiente
     private $Sensor_IdSensor;
     private $Tipo;
     private $IdSala;
+    private $IdUsuario;
     private $conexao;
     public function __construct($conexao)
     {
@@ -133,6 +134,47 @@ class ambiente
         return ['mensagem' => 'Erro: ' . $e->getMessage()];
     }
 }
+  public function AlertaAmbienteSensor($IdUsuario){
+  $sql = "SELECT 
+    u.IdUsuario AS idUsuario,
+    u.Nome AS nomeUsuario,
+    a.mensagem AS alerta,
+    a.data AS dataAlerta,  
+    amb.Idambiente AS idAmbiente,
+    se.Tipo AS sensor,
+    s.Nome AS sala
+FROM 
+    automacao.alertas a
+JOIN 
+    automacao.ambiente amb ON a.idAmbiente = amb.Idambiente
+JOIN 
+    automacao.sensor se ON amb.Sensor_IdSensor = se.IdSensor
+JOIN 
+    automacao.salas s ON se.Salas_idSalas = s.idSalas
+JOIN 
+    automacao.usuario u ON s.Usuario_IdUsuario = u.IdUsuario
+WHERE 
+    u.IdUsuario = ?;
+";
+$consulta = $this->conexao->prepare($sql);
+   try {
+   $consulta->bind_param("i", $IdUsuario);
+   if ($consulta->execute()) {
+    $result = $consulta->get_result(); 
 
+  
+    if ($result && $result->num_rows > 0) {
+        $dados = $result->fetch_all(MYSQLI_ASSOC); 
+        return $dados;
+    } else {
+        return ['mensagem' => 'Nenhum dado encontrado'];
+    }
+} else {
+    return ['mensagem' => 'Falha na execução da consulta'];
+}
+   } catch (mysqli_sql_exception $e) {
+    return ['mensagem' => 'Erro: ' . $e->getMessage()];
+}
+  }
 }
 ?>

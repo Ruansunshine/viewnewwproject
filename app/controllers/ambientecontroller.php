@@ -103,8 +103,7 @@ class AmbienteController {
         
         $ambiente = new Ambiente($this->conexao);
         $resultado = $ambiente->DadosAmbienteSensor($IdSala);
-        //   var_dump($resultado);
-        //   exit();
+        
         
         if (isset($resultado['mensagem'])) {
             return $resultado;
@@ -114,6 +113,22 @@ class AmbienteController {
             'mensagem' => 'Dados obtidos com sucesso',
             'dados' => $resultado
         ];
+    }
+    public function controllerAlertaAmbienteSensor($dados){
+        if (!isset($dados['IdUser']) || empty($dados['IdUser'])){
+          return ['mensagem' => 'Id do usuario é obrigatorio'];
+        }
+    $idUsuario = (int) $dados['IdUser'];
+    $ambiente = new Ambiente ($this->conexao);
+    $resultado = $ambiente->AlertaAmbienteSensor($idUsuario);
+    if (isset($resultado['mensagem'])) {
+        return $resultado;
+    }
+
+    return [
+        'mensagem' => 'Mensagem de alertas recebido',
+        'dados' => $resultado
+    ];
     }
     
 }

@@ -1,5 +1,6 @@
 <?php
 session_start(); 
+var_dump($_SESSION);
 $idUser = isset($_SESSION['idUser']) ? $_SESSION['idUser'] : null;
 // echo "o id do usuario =";
 // var_dump($idUser);
@@ -18,7 +19,7 @@ if (empty($sensores)) {
        
     }
 }
-
+    
 ?>
 
 <!DOCTYPE html>

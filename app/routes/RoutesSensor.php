@@ -24,13 +24,16 @@
                         header('Location: ../login.php?mensagem=Você precisa estar logado aqui e a rota.');
                         exit();
                     }
-                    $idSala = $_SESSION['salas'][0]['IdSalas'];
+                    $idSala = $_POST['idSalas'];
                     
                     if($action === 'cadastrarSensor'){
                         $dados = $_POST;
+                        // var_dump($dados);
                     $dados['Salas_idSalas'] = $idSala;
                     $dados['IdUsuario'] = $_SESSION['salas'][0]['IdUsuario'];
-                        
+                    // echo "<br> idsala===";
+                    //     var_dump($idSala);
+                    //     exit();
                         
                         $resposta = $this->sensorController->RegistrarSensor($dados);
                     

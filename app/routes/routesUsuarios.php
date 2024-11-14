@@ -24,7 +24,8 @@
                         session_start();
                         $_SESSION= [];
                         $dados = $_POST;
-                    
+                    // var_dump($dados);
+                    // exit();
                         $resposta = $this->UsuarioController->Registrar($dados);
                         
                         if ($resposta['sucess']) {
@@ -72,7 +73,12 @@
                         }
                     }else if( $action === 'delete'){
                             $dados = $_POST;
+                            echo " os dados do usuario ao clicar em excluir no routes =";
+                            var_dump($dados);
+                            echo "<br>";
                             $resposta = $this->UsuarioController->deleteUserController($dados);
+                            var_dump($resposta);
+                            
                             if($resposta['mensagem'] === 'Usuario e suas dependencia deletadas'){
                                 header('Location: http://localhost/projetoAci/app/views/users/createUsers.php?mensagem= "Usuario deletado com sucesoso "');
                                 exit();

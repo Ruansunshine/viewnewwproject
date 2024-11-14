@@ -1,7 +1,7 @@
 <?php
 session_start();
+var_dump($_POST);
 
-// var_dump($_SESSION['salas']);
 // Verificar se o usuário está logado
 if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
     $idUser = $_SESSION['idUser'];
@@ -12,16 +12,29 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         $nomeUsuario = implode('', $nomeUsuario);
     }
 
-    // Carregar as salas na sessão (ou em uma variável do banco de dados)
-    $salas = isset($_SESSION['salas']) ? $_SESSION['salas'] : []; // Salas associadas ao usuário
+    // Verificar se o idSalas e outros dados foram enviados via POST
+    if (isset($_POST['idSalas']) && isset($_POST['nomeSala']) && isset($_POST['descricaoSala'])) {
+        $idSalaAtual = $_POST['idSalas'];
+        $nomeSalaAtual = $_POST['nomeSala'];
+        $descricaoSalaAtual = $_POST['descricaoSala'];
+    } else {
+        // Caso os dados não tenham sido enviados, redirecionar ou exibir erro
+        header('Location: erro.php');
+        exit();
+    }
+
+    // Verificar salas disponíveis
+    $salas = isset($_SESSION['salas']) ? $_SESSION['salas'] : [];
 } else {
     header('Location: login.php?mensagem=Você precisa estar logado.');
     exit();
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,6 +48,7 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
             font-family: 'Poppins', sans-serif;
             padding: 20px;
         }
+
         header {
             background: #35424a;
             color: #ffffff;
@@ -42,6 +56,7 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
             text-align: center;
             margin-bottom: 20px;
         }
+
         form {
             background: #4a4a4a;
             padding: 20px;
@@ -50,17 +65,21 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
             max-width: 400px;
             margin: auto;
         }
+
         label {
             display: block;
             margin-bottom: 10px;
         }
-        input, select {
+
+        input,
+        select {
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -71,9 +90,11 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
             cursor: pointer;
             width: 100%;
         }
+
         button:hover {
             background-color: #4cae4c;
         }
+
         .btn-back {
             color: white;
             text-decoration: none;
@@ -81,45 +102,61 @@ if (isset($_SESSION['idUser']) && isset($_SESSION['nomeUsuario'])) {
         }
     </style>
 </head>
+
 <body>
 
-<a class="btn-back" href="http://localhost/projetoAci/app/views/salas/Myenviroment.php">&larr; Voltar</a>
+    <a class="btn-back" href="http://localhost/projetoAci/app/views/salas/Myenviroment.php">&larr; Voltar</a>
 
-<header>
-<h1>Cadastrar Novo Sensor em <?= htmlspecialchars($salas[0]['NomeSala']) ?></h1>
-</header>
+    <header>
+        <h1>Cadastrar Novo Sensor em <?= htmlspecialchars($nomeSalaAtual) ?></h1>
+    </header>
+    <form action="http://localhost/projetoAci/app/routes/RoutesSensor.php?action=cadastrarSensor" method="POST">
+        <input type="hidden" name="Usuario_IdUsuario" value="<?php echo $idUser; ?>">
+    <input type="hidden" name="idSalas" value="<?= htmlspecialchars($_POST['idSalas']) ?>"> <!-- Ajuste aqui -->
+    <input type="hidden" name="nomeSala" value="<?= htmlspecialchars($_POST['nomeSala']) ?>">
+    <input type="hidden" name="descricaoSala" value="<?= htmlspecialchars($_POST['descricaoSala']) ?>">
 
-<form action="http://localhost/projetoAci/app/routes/RoutesSensor.php?action=cadastrarSensor" method="POST">
-    <input type="hidden" name="Usuario_IdUsuario" value="<?php echo $idUser; ?>">
-    <input type="hidden" name="idSalas" value="<?= htmlspecialchars($sala['IdSalas']) ?>">
-    <input type="hidden" name="nomeSala" value="<?= htmlspecialchars($sala['NomeSala']) ?>">
-    
+        <label for="Tipo">Tipo de Sensor:</label>
+        <select id="Tipo" name="Tipo" required>
+            <option value="">Selecione um tipo de sensor</option>
+            <option value="temperatura">Temperatura</option>
+            <option value="Consumo Energia">Consumo Energia</option>
+            <option value="iluminacao">Iluminação</option>
+        </select>
 
-    <label for="Tipo">Tipo de Sensor:</label>
-<select id="Tipo" name="Tipo" required>
-    <option value="">Selecione um tipo de sensor</option>
-    <option value="temperatura">Temperatura</option>
-    <option value="Consumo Energia">Consumo Energia</option>
-    <option value="iluminacao">Iluminação</option>
-</select>
+        <label for="Sala">Sala:</label>
+        <select id="Sala" name="Salas_idSalas" required>
+            <option value="">Selecione uma sala</option>
 
+            <?php if (!empty($salas)): // Verifica se há salas disponíveis 
+            ?>
+                <?php
+                // Filtrar a sala que foi enviada via POST
+                $selectedSala = null;
+                foreach ($salas as $salaItem) {
+                    if ($salaItem['DescricaoSala'] === $descricaoSalaAtual) {
+                        $selectedSala = $salaItem;
+                        break; // Encontramos a sala enviada, então paramos de procurar
+                    }
+                }
 
-    <label for="Sala">Sala:</label>
-    <select id="Sala" name="Salas_idSalas" required>
-    <option value="">Selecione uma sala</option>
-    <?php if (!empty($salas)): // Verifica se $salas não está vazio ?>
-        <?php foreach ($salas as $sala): ?>
-            <option value="<?= htmlspecialchars($sala['IdSalas']) ?>">
-                <?= htmlspecialchars($sala['DescricaoSala']) ?>
-            </option>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <option value="">Nenhuma sala disponível</option>
-    <?php endif; ?>
-</select>
+                // Se a sala que foi enviada via POST foi encontrada, mostramos ela como a única opção
+                if ($selectedSala): ?>
+                    <option value="<?= htmlspecialchars($selectedSala['IdSalas']) ?>" selected>
+                        <?= htmlspecialchars($selectedSala['DescricaoSala']) ?>
+                    </option>
+                <?php else: ?>
+                    <option value="">Nenhuma sala disponível</option>
+                <?php endif; ?>
+            <?php else: ?>
+                <option value="">Nenhuma sala disponível</option>
+            <?php endif; ?>
+        </select>
 
-    <button type="submit">Cadastrar Sensor</button>
-</form>
+        <button type="submit">Cadastrar Sensor</button>
+    </form>
 
 </body>
+
+
 </html>
